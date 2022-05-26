@@ -8,6 +8,9 @@
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=tamrieltradecentre.com
 // @grant        none
 // @run-at      document-body
+// @source      https://github.com/alezhu/ttc-disable-ads-block-detection/raw/main/TTC%20Disable%20adblock%20detection.user.js
+// @updateURL   https://github.com/alezhu/ttc-disable-ads-block-detection/raw/main/TTC%20Disable%20adblock%20detection.user.js
+// @downloadURL https://github.com/alezhu/ttc-disable-ads-block-detection/raw/main/TTC%20Disable%20adblock%20detection.user.js
 // ==/UserScript==
 
 (function() {
