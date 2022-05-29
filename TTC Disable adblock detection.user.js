@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         TTC Disable adblock detection
 // @namespace    http://tampermonkey.net/
-// @version      1.2
+// @version      1.3
 // @description  Bypass checks for AdBlock on tamrieltradecentre.com
 // @author       alezhu
 // @match        *://*.tamrieltradecentre.com/pc/Trade/SearchResult*
@@ -15,7 +15,17 @@
 
 (function() {
     "use strict";
+    delete window.disableAds;
+    Object.defineProperty(window, 'disableAds', {
+        get: function() {
+            if (window.sessionId == null) {
+                window.sessionId = 1;
+            }
+            return false;
+        }
+    });
     window.adsbygoogle = { loaded: true };
+
     var orig_getElementsByClassName = document.getElementsByClassName;
     document.getElementsByClassName = function(classname) {
         if (classname.includes("adsbygoogle")) {
