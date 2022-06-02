@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         TTC Disable adblock detection
 // @namespace    http://tampermonkey.net/
-// @version      1.3
+// @version      1.4
 // @description  Bypass checks for AdBlock on tamrieltradecentre.com
 // @author       alezhu
 // @match        *://*.tamrieltradecentre.com/pc/Trade/SearchResult*
@@ -15,44 +15,28 @@
 
 (function() {
     "use strict";
-    delete window.disableAds;
-    Object.defineProperty(window, 'disableAds', {
-        get: function() {
-            if (window.sessionId == null) {
-                window.sessionId = 1;
+    new MutationObserver((changes, observer) => {
+        for (const change of changes) {
+            for (const node of change.addedNodes) {
+                if (node.tagName === 'SCRIPT' && node.src.includes('View')) {
+                    node.onload = () => {
+                        if (!!ViewModelBase) {
+                            ViewModelBase.prototype.GetAdModeAsync = function() {
+                                console.log('GetAdModeAsync');
+                                return "Full";
+                            };
+                            ViewModelBase.prototype.IsAdLoaded = function() {
+                                console.log('IsAdLoaded');
+                                return true
+                            };
+                        }
+                    }
+                    observer.disconnect();
+                }
             }
-            return false;
         }
+    }).observe(document.body, {
+        childList: true,
+        subtree: false,
     });
-    window.adsbygoogle = { loaded: true };
-
-    var orig_getElementsByClassName = document.getElementsByClassName;
-    document.getElementsByClassName = function(classname) {
-        if (classname.includes("adsbygoogle")) {
-            return [{
-                style: {
-                    display: "",
-                },
-                clientWidth: 3,
-                clientHeight: 3,
-            }, ];
-        } else {
-            try {
-                return orig_getElementsByClassName.call(document, classname);
-            } catch (e) {
-                console.error(e);
-                return [];
-            }
-        }
-    };
-    var orig_fetch = fetch;
-    fetch = function() {
-        if (arguments && arguments[0].includes("adsbygoogle.js")) {
-            return Promise.resolve().then(() => {
-                return { url: arguments[0] };
-            });
-        } else {
-            return orig_fetch.apply(window, arguments);
-        }
-    };
 })();
